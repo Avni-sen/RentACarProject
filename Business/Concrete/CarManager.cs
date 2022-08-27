@@ -32,9 +32,14 @@ namespace Business.Concrete
             };
         }
 
-        public Car Get(int id)
+        public void Delete(Car car)
         {
             throw new NotImplementedException();
+        }
+
+        public Car Get(int id)
+        {
+            return _carDal.Get(p => p.Id == id);
         }
 
         public List<Car> GetAll()
@@ -50,6 +55,11 @@ namespace Business.Concrete
         public List<Car> GetCarsByColorId(int colorId)
         {
             return _carDal.GetAll(p => p.ColorId == colorId);
+        }
+
+        public void Update(Car car)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -1,6 +1,7 @@
-﻿using DataAccess.Abstract;
-using Entities.Abstract;
+﻿using Core.DataAccess.EntityFramework;
+using DataAccess.Abstract;
 using Entities.Concrete;
+using Entities.DTOs;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -12,54 +13,21 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Concrete.EntityFramework
 {
-    public class EfCarDal : ICarDal
+    public class EfCarDal : EfEntityRepositoryBase<Car, RentACarContext>,ICarDal
     {
-        public void Add(Car car)
+       
+
+        public List<CarDetailDto> GetCarDetailDtos()
         {
             using (RentACarContext context = new())
             {
-                var addedCar = context.Entry(car);
-                addedCar.State = EntityState.Added;
-                context.SaveChanges();
-            }
-        }
-
-        public void Delete(Car car)
-        {
-            using (RentACarContext context = new())
-            {
-                var deletedCar = context.Entry(car);
-                deletedCar.State = EntityState.Deleted;
-                context.SaveChanges();
-            }
-        }
-
-        public Car Get(Expression<Func<Car, bool>> filter)
-        {
-            using (RentACarContext context = new())
-            {
-                return context.Set<Car>().Where(filter).SingleOrDefault();
-            }
-        }
-
-        public List<Car> GetAll(Expression<Func<Car, bool>> filter)
-        {
-            using (RentACarContext context = new())
-            {
-
-                return filter == null ? context.Set<Car>().ToList() : context.Set<Car>().Where(filter).ToList();
-
-
-            }
-        }
-
-        public void Update(Car car)
-        {
-            using (RentACarContext context = new())
-            {
-                var updatedCar = context.Entry(car);
-                updatedCar.State = EntityState.Modified;
-                context.SaveChanges();
+                var result = from x in context.Cars
+                             join c in context.Colors
+                             on x.ColorId equals c.Id
+                             join b in context.Brands
+                             on x.BrandId equals b.Id
+                             select new CarDetailDto { Id = x.Id, BrandName = b.BrandName, ColorName = c.ColorName };
+                return result.ToList();
             }
         }
     }
